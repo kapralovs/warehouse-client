@@ -3,6 +3,7 @@ package requests
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ func New() http.Client {
 	return client
 }
 
-func CreateRequest(method, url, encodedCreds string, data interface{}) (*http.Request, error) {
+func CreateRequest(method, url string, data interface{}) (*http.Request, error) {
 	if data != nil || method == "POST" {
 		dataAsBytes, err := json.Marshal(data)
 		if err != nil {
@@ -23,7 +24,8 @@ func CreateRequest(method, url, encodedCreds string, data interface{}) (*http.Re
 			return nil, err
 		}
 
-		req.Header.Add("Authorization", "Basic "+encodedCreds)
+		// req.Header.Add("Authorization", "Basic "+encodedCreds)
+		req.SetBasicAuth(os.Args[1], os.Args[2])
 		req.Header.Add("Content-Type", "application/json")
 		return req, nil
 	}
@@ -33,7 +35,7 @@ func CreateRequest(method, url, encodedCreds string, data interface{}) (*http.Re
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", "Basic "+encodedCreds)
+	req.SetBasicAuth(os.Args[1], os.Args[2])
 
 	return req, nil
 }
